@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 /**
- * @author naver
+ * @author oldwang
  */
 public class CustomConsumer {
 

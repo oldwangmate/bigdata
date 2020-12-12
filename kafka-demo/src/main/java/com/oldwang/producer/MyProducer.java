@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * @author naver
+ * @author oldwang
  */
 public class MyProducer {
 

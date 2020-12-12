@@ -7,6 +7,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import java.util.ArrayList;
 import java.util.Properties;
 
+/**
+ * @author oldwang
+ */
 public class InterceptorProducer {
     public static void main(String[] args) {
         Properties properties = new Properties();

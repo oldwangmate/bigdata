@@ -5,7 +5,7 @@ import org.apache.kafka.clients.producer.*;
 import java.util.Properties;
 
 /**
- * @author naver
+ * @author oldwang
  */
 public class MyProducerCallback {
     public static void main(String[] args) {

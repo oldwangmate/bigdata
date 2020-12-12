@@ -6,7 +6,7 @@ import org.apache.kafka.common.Cluster;
 import java.util.Map;
 
 /**
- * @author naver
+ * @author oldwang
  */
 public class MyPartitioner implements Partitioner {
 

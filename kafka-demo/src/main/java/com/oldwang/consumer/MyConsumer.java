@@ -5,11 +5,10 @@ import org.apache.kafka.common.TopicPartition;
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Properties;
 
 /**
- * @author naver
+ * @author oldwang
  */
 public class MyConsumer {
     public static void main(String[] args) {

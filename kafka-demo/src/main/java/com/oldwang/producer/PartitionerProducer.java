@@ -6,6 +6,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import java.util.Properties;
 
+/**
+ * @author oldwang
+ */
 public class PartitionerProducer {
     public static void main(String[] args) {
         Properties properties = new Properties();
