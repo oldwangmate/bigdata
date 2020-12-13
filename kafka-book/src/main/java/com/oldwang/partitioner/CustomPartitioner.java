@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author oldwang
+ * 自定义分区器逻辑
  */
 public class CustomPartitioner implements Partitioner {
 

@@ -1,4 +1,4 @@
-package com.oldwang.partitioner;
+package com.oldwang.interceptor;
 
 import com.oldwang.utils.GetProducerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -11,20 +11,21 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * @author oldwang
- * 自定义分区器
+ * 严重自定义拦截器
  */
-public class PartitionerProducer {
-
+public class InterceptorProducer {
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         Properties properties = GetProducerConfig.initConfig();
-        //设置自定义分区器
-        properties.put(ProducerConfig.PARTITIONER_CLASS_CONFIG,CustomPartitioner.class.getName());
+        //设置自定义拦截器(可指定多个拦截器)
+        properties.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG,CustomProducerInterceptor.class.getName()+","+CustomProducerInterceptorPlus.class.getName());
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
         //构建所需要发送的消息
-        ProducerRecord<String,String> record = new ProducerRecord<>("kafka-demo","hello kafka");
-        //发送消息
-        RecordMetadata recordMetadata = producer.send(record).get();
-        System.out.println(recordMetadata.partition());
+        for (int i = 0; i < 10; i++) {
+            ProducerRecord<String,String> record = new ProducerRecord<>("kafka-demo","hello kafka -"+i);
+            //发送消息
+            RecordMetadata recordMetadata = producer.send(record).get();
+            System.out.println(recordMetadata.partition());
+        }
         //关闭生产者客户端
         producer.close();
     }
