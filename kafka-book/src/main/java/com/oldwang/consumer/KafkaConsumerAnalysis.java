@@ -4,13 +4,18 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.PartitionInfo;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/**
+ * @author oldwang
+ * kafka消费者
+ */
 public class KafkaConsumerAnalysis {
     private static final String brokerList = "localhost:9092";
     private static final String topic = "kafka-demo";
@@ -22,6 +27,16 @@ public class KafkaConsumerAnalysis {
         KafkaConsumer<String,String> consumer = new KafkaConsumer<String, String>(properties);
         //订阅主题
         consumer.subscribe(Collections.singletonList(topic));
+
+        List<TopicPartition> partitions = new ArrayList<>();
+        List<PartitionInfo> partitionInfos = consumer.partitionsFor(topic);
+        partitionInfos.forEach(partitionInfo -> {
+            partitions.add(new TopicPartition(partitionInfo.topic(),partitionInfo.partition()));
+        });
+        //指定订阅那些分区
+        consumer.assign(partitions);
+        //指定订阅具体分区 如果订阅多个 最后一个生效
+        consumer.assign(Arrays.asList(new TopicPartition(topic,0)));
         try{
             while (isRunning.get()){
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(1000));
