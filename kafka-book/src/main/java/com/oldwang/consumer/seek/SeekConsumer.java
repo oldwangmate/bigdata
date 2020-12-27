@@ -1,10 +1,7 @@
 package com.oldwang.consumer.seek;
 
 import com.oldwang.utils.GetConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndTimestamp;
+import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 
 import java.time.Duration;
@@ -46,7 +43,24 @@ public class SeekConsumer {
         Properties properties = GetConsumerConfig.initConfig();
         properties.put("group.id","bigdata");
         KafkaConsumer<String,String> consumer = new KafkaConsumer<String, String>(properties);
-        consumer.subscribe(Collections.singletonList("kafka-demo"));
+        Map<TopicPartition, OffsetAndMetadata> currentOffset = new HashMap<>();
+        //在均衡发生前可以通过监听器的会调方法执行同步提交尽量避免消费重复
+        consumer.subscribe(Collections.singletonList("kafka-demo"), new ConsumerRebalanceListener() {
+            //在均衡之前和消费者停止消费之后被调用
+            @Override
+            public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
+                consumer.commitSync(currentOffset);
+                currentOffset.clear();
+            }
+            //重新分配分区和消费者开始读取消费之前被调用
+            @Override
+            public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
+                for (TopicPartition partition : partitions) {
+                    //从DB中读取消费移位
+                    consumer.seek(partition,getoffsetDb(partition));
+                }
+            }
+        });
         Set<TopicPartition> assignment = new HashSet<>();
         while (assignment.size() == 0){
             consumer.poll(Duration.ofMillis(100));
@@ -64,6 +78,7 @@ public class SeekConsumer {
                 List<ConsumerRecord<String, String>> recordList = records.records(partition);
                 for (ConsumerRecord<String, String> record : recordList) {
                     System.out.println(record.value());
+                    currentOffset.put(new TopicPartition(record.topic(),record.partition()),new OffsetAndMetadata(record.offset() +1));
                 }
                 long offset = recordList.get(recordList.size() -1).offset();
                 offsetToDB(partition,offset+1);
