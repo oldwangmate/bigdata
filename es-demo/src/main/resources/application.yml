@@ -1,0 +1,4 @@
+spring:
+  elasticsearch:
+    rest:  # 配置ElasticSearchRest 客户端 是现在推荐的
+      uris: http://localhost:9200
